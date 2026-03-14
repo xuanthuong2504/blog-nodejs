@@ -1,0 +1,30 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "blog"
+  ],
+  "homepage": "https://github.com/xuanthuong2504/blog-nodejs#readme",
+  "bugs": {
+    "url": "https://github.com/xuanthuong2504/blog-nodejs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xuanthuong2504/blog-nodejs.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --inspect index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
