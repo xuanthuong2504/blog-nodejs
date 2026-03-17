@@ -19,12 +19,13 @@
   "main": "src/index.js",
   "scripts": {
     "start": "nodemon --inspect src/index.js",
-      "watch": "sass --watch src/resources/scss:src/public/css",
+    "watch": "sass --watch src/resources/scss:src/public/css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "express": "^5.2.1",
-    "express-handlebars": "^8.0.6"
+    "express-handlebars": "^8.0.6",
+    "mssql": "^12.2.0"
   },
   "devDependencies": {
     "morgan": "^1.10.1",
