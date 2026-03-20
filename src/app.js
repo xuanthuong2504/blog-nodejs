@@ -2,10 +2,10 @@ const express = require('express');
 const morgan = require('morgan');
 const {engine} = require('express-handlebars');
 const path = require('path');
-
+const errorHandlingMiddleware = require('./middlewares/errorHandiling');
 const initRoutes= require('./routes/categories');
 const app = express();
-const port = 3000;
+
 
 //Static file
 app.use(express.static(path.join(__dirname,'public')));
@@ -42,7 +42,6 @@ app.post('/search', (req, res) => {
 })
 
 app.use(initRoutes);
+app.use(errorHandlingMiddleware);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-});
+module.exports= app;

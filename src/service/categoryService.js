@@ -1,5 +1,5 @@
-const categoryRepo = require('../models/categoryModel');
-
+const categoryRepo = require('../models/category.Model');
+const ErrorRes = require("../helpers/ErrorRes");
 
 const getAll = async() => {
   try {
@@ -35,12 +35,16 @@ const getCategoryById = async (id) => {
 
 const create = async (name,description) =>{
   try{
+    /*
+    const existingName = await categoryRepo.getname(name);
+    if(existingName){
+       throw new ErrorRes(409, "Tên danh mục đã tồn tại");
+    };*/
     const category= await categoryRepo.create(name,description);
     return {
       status :200,
       message:"Tạo danh mục thành công",
       data:category
-     
     }
   } catch(error){
     throw error;
@@ -48,6 +52,7 @@ const create = async (name,description) =>{
 };
 const edit = async (id,name) =>{
   try{
+    
     const category= await categoryRepo.edit(id,name);
     return {
       status :200,
@@ -61,6 +66,7 @@ const edit = async (id,name) =>{
 };
 const remove = async (id) => {
   try{
+    
     const category= await categoryRepo.remove(id);
     return {
       status :200,
