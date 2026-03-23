@@ -1,55 +1,30 @@
-const categoryService = require('../service/categoryService');
-const getCategoryById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        
-        const category = await categoryService.getCategoryById(id);
-        
-        return res.status(200).json(category);
-    } catch (error) {
-        return res.status(404).json({error: error.message});
-    }
+const categoryService = require("../service/category.service");
+const controllerWrapper = require("../utils/controller.wrapper");
+const getCategoryById = controllerWrapper(async (req) => {
+  const { id } = req.params;
+  return await categoryService.getCategoryById(id);
+});
+const getAll = controllerWrapper(async () => {
+  return await categoryService.getAll();
+});
+const create = controllerWrapper(async (req) => {
+  const { name, description } = req.body;
+  return await categoryService.create(name, description);
+});
+const edit = controllerWrapper(async (req) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  return await categoryService.edit(id, name);
+});
+const remove = controllerWrapper(async (req) => {
+  const { id } = req.params;
+  return await categoryService.remove(id);
+});
+
+module.exports = {
+  getAll,
+  getCategoryById,
+  create,
+  edit,
+  remove,
 };
-const getAll= async (req,res,next)=>{
-    try {
-        const category =  await categoryService.getAll();
-        return res.status(200).json(category);
-    } catch(error){
-       next(error);
-    }
-};
-const create= async (req,res,next)=>{
-    try {
-        const { name, description } = req.body;
-        const category = await categoryService.create(name,description);
-        return res.status(200).json(category);
-    } catch(error){
-        next(error);
-    }
-}
-const edit= async (req,res,next)=>{
-  try {
-        const { id }= req.params;
-        const { name } = req.body;
-        const category = await categoryService.edit(id,name);
-        return res.status(200).json(category);
-    } catch(error){
-        next(error);
-    }
-}
-const remove= async (req,res,next)=>{
-     try {
-        const { id }= req.params;
-        const category = await categoryService.remove(id);
-        return res.status(200).json(category);
-    } catch(error){
-        next(error);
-    }
-}
-module.exports={
-    getAll,
-    getCategoryById,
-    create,
-    edit,
-    remove
-}
