@@ -1,12 +1,9 @@
 const categoryRepo = require("../models/category.model");
 const ErrorRes = require("../helpers/ErrorRes");
 
-const getAll = async () => {
+const getAll = async (offset, limit) => {
   try {
-    const category = await categoryRepo.getAll();
-    if (!category) {
-      throw new ErrorRes(500);
-    }
+    const category = await categoryRepo.getAll(offset, limit);
     return {
       data: category,
     };
@@ -18,9 +15,7 @@ const getAll = async () => {
 const getCategoryById = async (id) => {
   try {
     const category = await categoryRepo.getById(id);
-    if (!category) {
-      throw new ErrorRes(500);
-    }
+
     return {
       data: category,
     };

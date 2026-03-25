@@ -1,10 +1,13 @@
 const { sql, pool } = require("../config/db");
 
-const getAll = async () => {
+const getAll = async (offset, limit) => {
   const result = await pool
     .request()
-
-    .query("SELECT id,name,description FROM Categories");
+    .input("offset", sql.Int, offset)
+    .input("limit", sql.Int, limit)
+    .query(
+      "SELECT id,name,description FROM Categories Order by id  OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY",
+    );
 
   return result.recordset;
 };

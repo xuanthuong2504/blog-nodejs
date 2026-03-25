@@ -1,9 +1,26 @@
 const express = require("express");
 const router = express.Router();
-const { param, body, validationResult } = require("express-validator");
-const category = require("../controllers/category.Controller");
+const { query, param, body, validationResult } = require("express-validator");
+const category = require("../controllers/category.controller");
 router.get("/categories/:id", category.getCategoryById);
-router.get("/categories", category.getAll);
+router.get(
+  "/categories",
+  [
+    query("offset").optional().isInt().withMessage("Offset must be an integer"),
+    query("limit").optional().isInt().withMessage("Limit must be an integer"),
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        errors: errors.array(),
+      });
+    }
+    next();
+  },
+  category.getAll,
+);
 router.post(
   "/categories",
   [
@@ -16,7 +33,7 @@ router.post(
     body("description")
       .notEmpty()
       .withMessage("Description is required")
-      .isLength({ max: 10 })
+      .isLength({ max: 30 })
       .withMessage("Description too long"),
   ],
   (req, res, next) => {
@@ -46,7 +63,8 @@ router.put(
   },
   category.edit,
 );
-router.delete("/categories/:id",
+router.delete(
+  "/categories/:id",
   [param("id").isInt().withMessage("Id must be an integer")],
   (req, res, next) => {
     const errors = validationResult(req);
@@ -58,6 +76,6 @@ router.delete("/categories/:id",
     }
     next();
   },
-  category.remove
+  category.remove,
 );
 module.exports = router;
