@@ -4,9 +4,7 @@ const ErrorRes = require("../helpers/ErrorRes");
 const getAll = async (offset, limit) => {
   try {
     const category = await categoryRepo.getAll(offset, limit);
-    return {
-      data: category,
-    };
+    return { category };
   } catch (error) {
     throw error;
   }
@@ -16,9 +14,7 @@ const getCategoryById = async (id) => {
   try {
     const category = await categoryRepo.getById(id);
 
-    return {
-      data: category,
-    };
+    return { category };
   } catch (error) {
     throw error;
   }

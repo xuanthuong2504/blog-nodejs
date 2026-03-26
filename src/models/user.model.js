@@ -4,7 +4,7 @@ const getbyEmail = async (email) => {
     .request()
     .input("email", sql.VarChar, email)
     .query(
-      "SELECT UserEmail, UserPassword FROM Users WHERE UserEmail = @email",
+      "SELECT UserId, UserEmail, UserPassword, UserRole, RefreshToken FROM Users WHERE UserEmail = @email",
     );
   return result.recordset[0] || null;
 };
@@ -19,7 +19,18 @@ const create = async (name, email, hashPassword) => {
     );
   return result;
 };
+const saverefreshtoken = async (email, refreshtoken) => {
+  const result = await pool
+    .request()
+    .input("email", sql.VarChar, email)
+    .input("refreshtoken", sql.VarChar, refreshtoken)
+    .query(
+      "UPDATE Users SET RefreshToken = @refreshtoken WHERE UserEmail = @email",
+    );
+  return result;
+};
 module.exports = {
   getbyEmail,
   create,
+  saverefreshtoken,
 };

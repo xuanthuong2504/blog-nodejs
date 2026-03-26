@@ -45,6 +45,5 @@ app.post("/search", (req, res) => {
 });
 
 intRoutes(app);
-app.use(errorHandlingMiddleware);
 
 module.exports = app;
