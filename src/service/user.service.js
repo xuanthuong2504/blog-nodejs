@@ -21,8 +21,25 @@ const login = async (email, password) => {
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: "7d" },
     );
-    await userRepo.saverefreshtoken(email, refreshtoken);
+    await userRepo.saverefreshtoken(user.UserId, refreshtoken);
     return { accesstoken, refreshtoken };
+  } catch (error) {
+    throw error;
+  }
+};
+const refreshtoken = async (refreshtoken) => {
+  try {
+    const decoded = jwt.verify(refreshtoken, process.env.JWT_REFRESH_SECRET);
+
+    const user = await userRepo.getbyId(decoded.userId);
+
+    if (!user) throw new Error("User not found");
+    const accesstoken = jwt.sign(
+      { userId: user.UserId, userRole: user.UserRole },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" },
+    );
+    return { accesstoken };
   } catch (error) {
     throw error;
   }
@@ -42,11 +59,13 @@ const register = async (name, email, password) => {
     throw error;
   }
 };
-const logout = async (email) => {
+const logout = async (id) => {
   try {
-    const user = await userRepo.getbyEmail(email);
+    const user = await userRepo.getbyId(id);
+
     user.refreshtoken = null;
-    await userRepo.saverefreshtoken(email, user.refreshtoken);
+
+    await userRepo.saverefreshtoken(id, user.refreshtoken);
     return {};
   } catch (error) {
     throw error;
@@ -56,4 +75,5 @@ module.exports = {
   login,
   register,
   logout,
+  refreshtoken,
 };

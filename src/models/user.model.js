@@ -1,4 +1,15 @@
 const { sql, pool } = require("../config/db");
+
+const getbyId = async (id) => {
+  const result = await pool
+    .request()
+    .input("id", sql.Int, id)
+    .query(
+      "SELECT UserId, UserFullname, UserEmail, UserRole, RefreshToken FROM Users WHERE UserId = @id",
+    );
+  return result.recordset[0] || null;
+};
+
 const getbyEmail = async (email) => {
   const result = await pool
     .request()
@@ -19,17 +30,16 @@ const create = async (name, email, hashPassword) => {
     );
   return result;
 };
-const saverefreshtoken = async (email, refreshtoken) => {
+const saverefreshtoken = async (id, refreshtoken) => {
   const result = await pool
     .request()
-    .input("email", sql.VarChar, email)
+    .input("id", sql.Int, id)
     .input("refreshtoken", sql.VarChar, refreshtoken)
-    .query(
-      "UPDATE Users SET RefreshToken = @refreshtoken WHERE UserEmail = @email",
-    );
+    .query("UPDATE Users SET RefreshToken = @refreshtoken WHERE UserId = @id");
   return result;
 };
 module.exports = {
+  getbyId,
   getbyEmail,
   create,
   saverefreshtoken,

@@ -1,6 +1,10 @@
 const { sql, pool } = require("../config/db");
 
 const getAll = async (offset, limit) => {
+  const total = await pool
+    .request()
+    .query("SELECT COUNT(id) AS total FROM Categories");
+
   const result = await pool
     .request()
     .input("offset", sql.Int, offset)
@@ -9,7 +13,10 @@ const getAll = async (offset, limit) => {
       "SELECT id,name,description FROM Categories Order by id  OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY",
     );
 
-  return result.recordset;
+  return {
+    categories: result.recordset,
+    total: total.recordset[0].total,
+  };
 };
 
 const getById = async (id) => {

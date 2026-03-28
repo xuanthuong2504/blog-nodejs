@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { query, param, body, validationResult } = require("express-validator");
 const category = require("../controllers/category.controller");
+const { authenticateToken } = require("../middlewares/auth.middleware");
 router.get("/categories/:id", category.getCategoryById);
 router.get(
   "/categories",
@@ -19,6 +20,7 @@ router.get(
     }
     next();
   },
+  authenticateToken,
   category.getAll,
 );
 router.post(

@@ -1,6 +1,7 @@
 const categoryService = require("../service/category.service");
-const Response = require("../utils/response");
-const { controllerWrapper } = require("../utils/controller.wrapper");
+const Response = require("../utils/response.utils");
+const { controllerWrapper } = require("../utils/controller.utils");
+const { SUCCESS_CATE } = require("../constants/msg.constants");
 
 class CategoryController extends Response {
   constructor() {
@@ -9,41 +10,32 @@ class CategoryController extends Response {
   getCategoryById = controllerWrapper(async (req, res) => {
     const { id } = req.params;
     const category = await categoryService.getCategoryById(id);
-    this.GET(res, category, "Category retrieved successfully", null, null);
+    this.GET(res, category, SUCCESS_CATE, null, null);
   });
   getAll = controllerWrapper(async (req, res) => {
     const { offset, limit } = req.query;
-    const categories = await categoryService.getAll(offset, limit);
-    this.GET(res, categories, "Categories retrieved successfully", null, null);
+    const { categories, total, totalpage } = await categoryService.getAll(
+      offset,
+      limit,
+    );
+    this.GET(res, { categories, total, totalpage }, SUCCESS_CATE, null, null);
   });
   create = controllerWrapper(async (req, res) => {
     const { name, description } = req.body;
     const newCategory = await categoryService.create(name, description);
 
-    this.CREATE(res, newCategory, "Category created successfully", null, null);
+    this.POST(res, newCategory, SUCCESS_CATE, null, null);
   });
   edit = controllerWrapper(async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
     const updatedCategory = await categoryService.edit(id, name);
-    this.UPDATE(
-      res,
-      updatedCategory,
-      "Category updated successfully",
-      null,
-      null,
-    );
+    this.PUT(res, updatedCategory, SUCCESS_CATE, null, null);
   });
   remove = controllerWrapper(async (req, res) => {
     const { id } = req.params;
     const deletedCategory = await categoryService.remove(id);
-    this.DELETE(
-      res,
-      deletedCategory,
-      "Category deleted successfully",
-      null,
-      null,
-    );
+    this.DELETE(res, deletedCategory, SUCCESS_CATE, null, null);
   });
 }
 

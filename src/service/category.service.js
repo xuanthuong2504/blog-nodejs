@@ -1,10 +1,10 @@
 const categoryRepo = require("../models/category.model");
-const ErrorRes = require("../helpers/ErrorRes");
 
 const getAll = async (offset, limit) => {
   try {
-    const category = await categoryRepo.getAll(offset, limit);
-    return { category };
+    const { categories, total } = await categoryRepo.getAll(offset, limit);
+    const totalpage = Math.ceil(total / limit);
+    return { categories, total, totalpage };
   } catch (error) {
     throw error;
   }
