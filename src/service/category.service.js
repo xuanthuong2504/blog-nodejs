@@ -20,9 +20,9 @@ const getCategoryById = async (id) => {
   }
 };
 
-const create = async (name, description) => {
+const create = async (name, description, images) => {
   try {
-    const category = await categoryRepo.create(name, description);
+    const category = await categoryRepo.create(name, description, images);
     return {};
   } catch (error) {
     throw error;

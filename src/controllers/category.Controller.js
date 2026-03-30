@@ -22,7 +22,10 @@ class CategoryController extends Response {
   });
   create = controllerWrapper(async (req, res) => {
     const { name, description } = req.body;
-    const newCategory = await categoryService.create(name, description);
+    const images = (req.files || []).map((file) => {
+      return `/img/categories/${file.filename}`;
+    });
+    const newCategory = await categoryService.create(name, description, images);
 
     this.POST(res, newCategory, SUCCESS_CATE, null, null);
   });

@@ -3,6 +3,7 @@ const router = express.Router();
 const { query, param, body, validationResult } = require("express-validator");
 const category = require("../controllers/category.controller");
 const { authenticateToken } = require("../middlewares/auth.middleware");
+const upload = require("../middlewares/upload.middleware");
 router.get("/categories/:id", category.getCategoryById);
 router.get(
   "/categories",
@@ -25,6 +26,16 @@ router.get(
 );
 router.post(
   "/categories",
+  (req, res, next) => {
+    upload.array("images", 10)(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({
+          message: err.message || "Upload image failed",
+        });
+      }
+      next();
+    });
+  },
   [
     body("name")
       .notEmpty()
@@ -48,6 +59,7 @@ router.post(
     }
     next();
   },
+
   category.create,
 );
 router.put(
