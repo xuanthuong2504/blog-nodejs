@@ -1,6 +1,8 @@
 const { sql, pool } = require("../config/db");
 
-const getAll = async (offset, limit) => {
+const getAll = async (query) => {
+  const { offset, limit } = query;
+
   const total = await pool
     .request()
     .query("SELECT COUNT(id) AS total FROM Categories");
@@ -13,26 +15,12 @@ const getAll = async (offset, limit) => {
       "SELECT id,name,description,images FROM Categories Order by id  OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY",
     );
 
-  const categories = result.recordset.map((row) => {
-    let images = [];
-    if (row.images) {
-      try {
-        images = JSON.parse(row.images);
-      } catch (e) {
-        images = [];
-      }
-    }
-    return {
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      images,
-    };
-  });
+  const totalpage = Math.ceil(total.recordset[0].total / limit);
 
   return {
-    categories,
+    categories: result.recordset,
     total: total.recordset[0].total,
+    totalpage: totalpage,
   };
 };
 
@@ -40,40 +28,28 @@ const getById = async (id) => {
   const result = await pool
     .request()
     .input("id", sql.Int, id)
-    .query(
-      "SELECT id, name, description, images FROM Categories WHERE id = @id",
-    );
+    .query("SELECT name, description, images FROM Categories WHERE id = @id");
 
-  const row = result.recordset[0];
-  if (!row) return null;
-
-  let images = [];
-  if (row.images) {
-    try {
-      images = JSON.parse(row.images);
-    } catch (e) {
-      images = [];
-    }
-  }
-
-  return {
-    id: row.id,
-    name: row.name,
-    description: row.description,
-    images,
-  };
+  return result.recordset[0] || null;
 };
 const create = async (name, description, images) => {
-  const result = await pool
-    .request()
-    .input("name", sql.NVarChar, name)
-    .input("description", sql.NVarChar, description)
-    .input("images", sql.NVarChar, JSON.stringify(images))
-    .query(
-      "INSERT INTO Categories (name,description,images) VALUES (@name, @description, @images)",
-    );
-
-  return result.rowsAffected[0];
+  const transaction = new sql.Transaction(pool);
+  try {
+    await transaction.begin();
+    const request = new sql.Request(transaction);
+    const result = await request
+      .input("name", sql.NVarChar, name)
+      .input("description", sql.NVarChar, description)
+      .input("images", sql.NVarChar, JSON.stringify(images))
+      .query(
+        "INSERT INTO Categories (name,description,images) VALUES (@name, @description, @images)",
+      );
+    await transaction.commit();
+    return result.rowsAffected[0];
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 const edit = async (id, name) => {
   const result = await pool

@@ -27,7 +27,7 @@ router.get(
 router.post(
   "/categories",
   (req, res, next) => {
-    upload.array("images", 10)(req, res, (err) => {
+    upload(req, res, (err) => {
       if (err) {
         return res.status(400).json({
           message: err.message || "Upload image failed",

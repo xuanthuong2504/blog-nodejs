@@ -13,21 +13,19 @@ const storage = multer.diskStorage({
     cb(null, filename);
   },
 });
-const allowedFormats = ["jpg", "jpeg", "png", "webp"];
 
 const fileFilter = (req, file, cb) => {
-  const ext = path.extname(file.originalname).toLowerCase().replace(".", ""); // ví dụ "jpg"
-  const isAllowed = allowedFormats.includes(ext);
-
-  if (isAllowed) {
-    cb(null, true);
-  } else {
-    cb(new Error("Chỉ chấp nhận file ảnh: " + allowedFormats.join(", ")));
+  const filetypes = /jpg|jpeg|png|webp/;
+  const mimetype = filetypes.test(file.mimetype);
+  const ext = filetypes.test(path.extname(file.originalname).toLowerCase());
+  if (mimetype && ext) {
+    return cb(null, true);
   }
+  cb(new Error("Chỉ chấp nhận file ảnh: " + filetypes));
 };
 const upload = multer({
   storage,
   fileFilter,
   limits: { fileSize: 2 * 1024 * 1024 },
-});
+}).array("images", 10);
 module.exports = upload;

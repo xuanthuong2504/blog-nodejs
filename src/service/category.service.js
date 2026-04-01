@@ -1,9 +1,8 @@
 const categoryRepo = require("../models/category.model");
 
-const getAll = async (offset, limit) => {
+const getAll = async (query) => {
   try {
-    const { categories, total } = await categoryRepo.getAll(offset, limit);
-    const totalpage = Math.ceil(total / limit);
+    const { categories, total, totalpage } = await categoryRepo.getAll(query);
     return { categories, total, totalpage };
   } catch (error) {
     throw error;
@@ -23,6 +22,7 @@ const getCategoryById = async (id) => {
 const create = async (name, description, images) => {
   try {
     const category = await categoryRepo.create(name, description, images);
+    // throw Error("Test rollback");
     return {};
   } catch (error) {
     throw error;

@@ -2,6 +2,8 @@ const categoryService = require("../service/category.service");
 const Response = require("../utils/response.utils");
 const { controllerWrapper } = require("../utils/controller.utils");
 const { SUCCESS_CATE } = require("../constants/msg.constants");
+const fs = require("fs");
+const path = require("path");
 
 class CategoryController extends Response {
   constructor() {
@@ -13,10 +15,8 @@ class CategoryController extends Response {
     this.GET(res, category, SUCCESS_CATE, null, null);
   });
   getAll = controllerWrapper(async (req, res) => {
-    const { offset, limit } = req.query;
     const { categories, total, totalpage } = await categoryService.getAll(
-      offset,
-      limit,
+      req.query,
     );
     this.GET(res, { categories, total, totalpage }, SUCCESS_CATE, null, null);
   });
@@ -25,9 +25,28 @@ class CategoryController extends Response {
     const images = (req.files || []).map((file) => {
       return `/img/categories/${file.filename}`;
     });
-    const newCategory = await categoryService.create(name, description, images);
+    console.log(images);
 
-    this.POST(res, newCategory, SUCCESS_CATE, null, null);
+    try {
+      const newCategory = await categoryService.create(
+        name,
+        description,
+        images,
+      );
+
+      this.POST(res, newCategory, SUCCESS_CATE, null, null);
+    } catch (error) {
+      const uploadDir = path.join(__dirname, "../public/img/categories");
+
+      for (const file of req.files || []) {
+        const filePath = path.join(uploadDir, file.filename);
+        try {
+          await fs.promises.unlink(filePath);
+        } catch (_) {}
+      }
+
+      throw error;
+    }
   });
   edit = controllerWrapper(async (req, res) => {
     const { id } = req.params;
