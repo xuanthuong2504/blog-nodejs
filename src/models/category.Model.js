@@ -67,10 +67,18 @@ const remove = async (id) => {
     .query("DELETE FROM Categories WHERE id= @id");
   return result.rowsAffected[0];
 };
+const removeimage = async (id) => {
+  const result = await pool
+    .request()
+    .input("id", sql.Int, id)
+    .query("Update Categories SET images = NULL WHERE id= @id");
+  return result.rowsAffected[0];
+};
 module.exports = {
   getAll,
   getById,
   create,
   edit,
   remove,
+  removeimage,
 };

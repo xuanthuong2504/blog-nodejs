@@ -1,5 +1,6 @@
 const categoryRepo = require("../models/category.model");
-
+const fs = require("fs");
+const path = require("path");
 const getAll = async (query) => {
   try {
     const { categories, total, totalpage } = await categoryRepo.getAll(query);
@@ -44,6 +45,23 @@ const remove = async (id) => {
     throw error;
   }
 };
+const removeimage = async (id) => {
+  try {
+    const category = await categoryRepo.getById(id);
+
+    const filename = JSON.parse(category.images);
+
+    const uploadDir = path.join(__dirname, "../public/img/categories");
+    for (const name of filename) {
+      if (!name) continue;
+      await fs.promises.unlink(path.join(uploadDir, name)).catch(() => {});
+    }
+    await categoryRepo.removeimage(id);
+    return {};
+  } catch (error) {
+    throw error;
+  }
+};
 
 module.exports = {
   getAll,
@@ -51,4 +69,5 @@ module.exports = {
   create,
   edit,
   remove,
+  removeimage,
 };

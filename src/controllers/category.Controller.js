@@ -23,7 +23,7 @@ class CategoryController extends Response {
   create = controllerWrapper(async (req, res) => {
     const { name, description } = req.body;
     const images = (req.files || []).map((file) => {
-      return `/img/categories/${file.filename}`;
+      return file.filename;
     });
     console.log(images);
 
@@ -58,6 +58,11 @@ class CategoryController extends Response {
     const { id } = req.params;
     const deletedCategory = await categoryService.remove(id);
     this.DELETE(res, deletedCategory, SUCCESS_CATE, null, null);
+  });
+  removeimage = controllerWrapper(async (req, res) => {
+    const { id } = req.params;
+    const result = await categoryService.removeimage(id);
+    this.DELETE(res, result, SUCCESS_CATE, null, null);
   });
 }
 
