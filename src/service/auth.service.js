@@ -34,6 +34,12 @@ const refreshtoken = async (refreshtoken) => {
   try {
     const decoded = jwt.verify(refreshtoken, process.env.JWT_REFRESH_SECRET);
 
+    const cachekey = `refreshtoken:${decoded.userId}`;
+
+    const stored = await redis.get(cachekey);
+    if (!stored || stored !== refreshtoken) {
+      throw new Error("Invalid refresh token");
+    }
     const user = await userRepo.getbyId(decoded.userId);
 
     if (!user) throw new Error("User not found");
