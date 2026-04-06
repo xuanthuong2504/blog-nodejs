@@ -5,6 +5,7 @@ const category = require("../controllers/category.controller");
 const { authenticateToken } = require("../middlewares/auth.middleware");
 const upload = require("../middlewares/upload.middleware");
 const resizeimage = require("../middlewares/resize.middleware");
+
 router.get("/categories/:id", category.getCategoryById);
 router.get(
   "/categories",
@@ -37,7 +38,7 @@ router.post(
       next();
     });
   },
-  // resizeimage,
+  resizeimage,
   [
     body("name")
       .notEmpty()
@@ -51,6 +52,7 @@ router.post(
       .isLength({ max: 30 })
       .withMessage("Description too long"),
   ],
+
   (req, res, next) => {
     const errors = validationResult(req);
 
@@ -108,4 +110,5 @@ router.patch(
   },
   category.removeimage,
 );
+
 module.exports = router;

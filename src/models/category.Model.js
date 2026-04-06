@@ -28,7 +28,9 @@ const getById = async (id) => {
   const result = await pool
     .request()
     .input("id", sql.Int, id)
-    .query("SELECT name, description, images FROM Categories WHERE id = @id");
+    .query(
+      "SELECT id, name, description, images FROM Categories WHERE id = @id",
+    );
 
   return result.recordset[0] || null;
 };

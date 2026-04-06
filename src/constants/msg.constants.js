@@ -4,4 +4,5 @@ module.exports = {
   SUCCESS_REGISTER: "Đăng ký thành công",
   SUCCESS_LOGOUT: "Đăng xuất thành công",
   SUCCESS_REFRESH_TOKEN: "Làm mới token thành công",
+  SUCCESS_USER: " Lấy thông tin người dùng thành công",
 };

@@ -11,6 +11,7 @@ class CategoryController extends Response {
   }
   getCategoryById = controllerWrapper(async (req, res) => {
     const { id } = req.params;
+
     const category = await categoryService.getCategoryById(id);
     this.GET(res, category, SUCCESS_CATE, null, null);
   });
