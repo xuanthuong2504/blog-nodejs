@@ -2,6 +2,7 @@ const categoryRepo = require("../models/category.model");
 const fs = require("fs");
 const path = require("path");
 const redis = require("../config/redis.config");
+const client = require("../config/mqtt.config");
 const getAll = async (query) => {
   try {
     const { categories, total, totalpage } = await categoryRepo.getAll(query);
@@ -17,6 +18,10 @@ const getCategoryById = async (id) => {
     // Try to get category from Redis hash cache first
     const cachedCategory = await redis.hgetall(cacheKey);
     if (cachedCategory && Object.keys(cachedCategory).length > 0) {
+      client.publish("getbyid", JSON.stringify(cachedCategory), {
+        qos: 1,
+      });
+
       return { category: cachedCategory };
     }
     // Cache miss
@@ -29,6 +34,10 @@ const getCategoryById = async (id) => {
       images: category.images,
     });
     await redis.expire(cacheKey, 180);
+    client.publish("getbyid", JSON.stringify(category), {
+      qos: 1,
+      retain: true,
+    });
     return { category };
   } catch (error) {
     throw error;
@@ -44,18 +53,24 @@ const create = async (name, description, images) => {
     throw error;
   }
 };
-const edit = async (id, name) => {
+const edit = async (id, name, State) => {
   try {
     const cacheKey = `category:${id}`;
     const exists = await redis.exists(cacheKey);
     if (exists) {
       await redis
         .pipeline()
-        .hset(cacheKey, "name", name)
+        .hset(cacheKey, "name", name, "State", State)
         .expire(cacheKey, 180)
         .exec();
     }
-    await categoryRepo.edit(id, name);
+    await categoryRepo.edit(id, name, State);
+
+    client.publish("category/updated", JSON.stringify({ id, name, State }), {
+      qos: 1,
+      retain: true,
+    });
+
     return {};
   } catch (error) {
     throw error;

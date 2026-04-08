@@ -53,12 +53,13 @@ const create = async (name, description, images) => {
     throw error;
   }
 };
-const edit = async (id, name) => {
+const edit = async (id, name, State) => {
   const result = await pool
     .request()
     .input("id", sql.Int, id)
     .input("name", sql.NVarChar, name)
-    .query("UPDATE Categories SET Name=@name Where id = @id");
+    .input("State", sql.VarChar, State)
+    .query("UPDATE Categories SET Name=@name, State=@State WHERE id = @id");
 
   return result.rowsAffected[0];
 };

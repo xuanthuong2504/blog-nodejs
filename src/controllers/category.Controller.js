@@ -51,8 +51,9 @@ class CategoryController extends Response {
   });
   edit = controllerWrapper(async (req, res) => {
     const { id } = req.params;
-    const { name } = req.body;
-    const updatedCategory = await categoryService.edit(id, name);
+    const { name, State } = req.body;
+
+    const updatedCategory = await categoryService.edit(id, name, State);
     this.PUT(res, updatedCategory, SUCCESS_CATE, null, null);
   });
   remove = controllerWrapper(async (req, res) => {
