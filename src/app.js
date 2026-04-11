@@ -1,8 +1,10 @@
 const express = require("express");
 const morgan = require("morgan");
 const { engine } = require("express-handlebars");
+
 const path = require("path");
 const errorHandlingMiddleware = require("./middlewares/errorHandiling.middleware");
+
 const intRoutes = require("./routes/index");
 
 const app = express();

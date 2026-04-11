@@ -1,0 +1,238 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Documentation",
+    "description": "API quản lý danh mục sản phẩm",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Thuong",
+      "email": "abc@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Categories",
+      "description": "Quản lý danh mục sản phẩm"
+    }
+  ],
+  "paths": {
+    "/categories": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Lấy danh sách các danh mục sản phẩm",
+        "operationId": "getCategories",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "description": "Số danh mục cần bỏ qua"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "description": "Số danh mục cần trả về"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/category"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Categories"],
+        "summary": "Thêm danh mục sản phẩm mới",
+        "operationId": "createCategory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/createcategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo danh mục sản phẩm thành công"
+          },
+
+          "500": {
+            "$ref": "#/components/responses/Internal"
+          }
+        }
+      }
+    },
+    "/categories/{id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "description": "ID của danh mục sản phẩm cần lấy"
+          }
+        }
+      ],
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Lấy danh mục sản phẩm theo ID",
+        "operationId": "getCategoryById",
+
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/category"
+                }
+              }
+            }
+          },
+
+          "404": {
+            "description": "Category not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Categories"],
+        "summary": "Cập nhật danh mục sản phẩm",
+        "operationId": "updateCategoryById",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updatecategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật thành công"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Categories"],
+        "summary": "Cập nhật ảnh danh mục sản phẩm",
+        "description": "",
+        "operationId": "removeCategoryImageById",
+
+        "responses": {
+          "200": {
+            "description": "Xóa thành công"
+          },
+
+          "500": {
+            "$ref": "#/components/responses/Internal"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Categories"],
+        "summary": "Xóa danh mục sản phẩm",
+        "operationId": "deleteCategoryById",
+        "responses": {
+          "200": {
+            "description": "Xóa thành công"
+          },
+
+          "500": {
+            "$ref": "#/components/responses/Internal"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "string"
+          }
+        }
+      },
+      "createcategory": {
+        "type": "object",
+        "required": ["name", "description", "images"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "updatecategory": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "Internal": {
+        "description": "Internal Server Error"
+      }
+    }
+  }
+}

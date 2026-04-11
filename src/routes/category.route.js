@@ -23,7 +23,7 @@ router.get(
     }
     next();
   },
-  authenticateToken,
+
   category.getAll,
 );
 router.post(

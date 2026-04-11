@@ -27,11 +27,14 @@ const getCategoryById = async (id) => {
     // Cache miss
 
     const category = await categoryRepo.getById(id);
+    if (!category) {
+      return [];
+    }
     await redis.hset(cacheKey, {
-      id: String(category.id),
-      name: category.name,
-      description: category.description,
-      images: category.images,
+      id: String(category?.id), //có chấm hỏi thì category có thể rỗng
+      name: category?.name,
+      description: category?.description,
+      images: category?.images,
     });
     await redis.expire(cacheKey, 180);
     client.publish("getbyid", JSON.stringify(category), {
@@ -88,8 +91,12 @@ const remove = async (id) => {
 };
 const removeimage = async (id) => {
   try {
-    const category = await categoryRepo.getById(id);
+    const result = await categoryRepo.getById(id);
 
+    const category = result?.recordset?.[0];
+    if (!category) {
+      return {};
+    }
     const filename = JSON.parse(category.images);
 
     const uploadDir = path.join(__dirname, "../public/img/categories");

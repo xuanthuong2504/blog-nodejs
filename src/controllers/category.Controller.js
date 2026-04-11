@@ -26,7 +26,6 @@ class CategoryController extends Response {
     const images = (req.files || []).map((file) => {
       return file.filename;
     });
-    console.log(images);
 
     try {
       const newCategory = await categoryService.create(

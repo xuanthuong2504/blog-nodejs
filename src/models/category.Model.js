@@ -32,14 +32,14 @@ const getById = async (id) => {
       "SELECT id, name, description, images FROM Categories WHERE id = @id",
     );
 
-  return result.recordset[0] || null;
+  return result;
 };
 const create = async (name, description, images) => {
   const transaction = new sql.Transaction(pool);
   try {
     await transaction.begin();
     const request = new sql.Request(transaction);
-    const result = await request
+    await request
       .input("name", sql.NVarChar, name)
       .input("description", sql.NVarChar, description)
       .input("images", sql.NVarChar, JSON.stringify(images))
@@ -47,35 +47,35 @@ const create = async (name, description, images) => {
         "INSERT INTO Categories (name,description,images) VALUES (@name, @description, @images)",
       );
     await transaction.commit();
-    return result.rowsAffected[0];
+    return [];
   } catch (error) {
     await transaction.rollback();
     throw error;
   }
 };
 const edit = async (id, name, State) => {
-  const result = await pool
+  await pool
     .request()
     .input("id", sql.Int, id)
     .input("name", sql.NVarChar, name)
     .input("State", sql.VarChar, State)
     .query("UPDATE Categories SET Name=@name, State=@State WHERE id = @id");
 
-  return result.rowsAffected[0];
+  return [];
 };
 const remove = async (id) => {
-  const result = await pool
+  await pool
     .request()
     .input("id", sql.Int, id)
     .query("DELETE FROM Categories WHERE id= @id");
-  return result.rowsAffected[0];
+  return [];
 };
 const removeimage = async (id) => {
-  const result = await pool
+  await pool
     .request()
     .input("id", sql.Int, id)
     .query("Update Categories SET images = NULL WHERE id= @id");
-  return result.rowsAffected[0];
+  return [];
 };
 module.exports = {
   getAll,
