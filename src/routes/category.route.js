@@ -15,7 +15,7 @@ router.get(
     query("limit").optional().isInt().withMessage("Limit must be an integer"),
   ],
   validationMiddleware,
-
+  authenticateToken,
   category.getAll,
 );
 router.post(
@@ -45,25 +45,28 @@ router.post(
       .withMessage("Description too long"),
   ],
   validationMiddleware,
-
+  authenticateToken,
   category.create,
 );
 router.put(
   "/categories/:id",
   [param("id").isInt().withMessage("Id must be an integer")],
   validationMiddleware,
+  authenticateToken,
   category.edit,
 );
 router.delete(
   "/categories/:id",
   [param("id").isInt().withMessage("Id must be an integer")],
   validationMiddleware,
+  authenticateToken,
   category.remove,
 );
 router.patch(
   "/categories/:id",
   [param("id").isInt().withMessage("Id must be an integer")],
   validationMiddleware,
+  authenticateToken,
   category.removeimage,
 );
 
