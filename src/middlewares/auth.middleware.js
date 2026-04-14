@@ -12,6 +12,7 @@ const authenticateToken = (req, res, next) => {
         return res.status(403).json({ error: "Invalid or expired token" });
       }
       req.user = user;
+      // console.log("User in middleware:", req.user);
       next();
     });
   } catch (error) {

@@ -24,12 +24,13 @@ const getAll = async (query) => {
   };
 };
 
-const getById = async (id) => {
+const getById = async (id, userId) => {
   const result = await pool
     .request()
     .input("id", sql.Int, id)
+    .input("userId", sql.Int, userId)
     .query(
-      "SELECT id, name, description, images FROM Categories WHERE id = @id",
+      "SELECT id, name, description, images FROM Categories JOIN Users ON  Categories.UserId = Users.UserId Where Categories.id = @id AND Users.UserId = @userId ",
     );
 
   return result;

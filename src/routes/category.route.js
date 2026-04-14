@@ -7,7 +7,13 @@ const { authenticateToken } = require("../middlewares/auth.middleware");
 const upload = require("../middlewares/upload.middleware");
 const resizeimage = require("../middlewares/resize.middleware");
 
-router.get("/categories/:id", category.getCategoryById);
+router.get(
+  "/categories/:id",
+  [param("id").isInt().withMessage("Id must be an integer")],
+  validationMiddleware,
+  authenticateToken,
+  category.getCategoryById,
+);
 router.get(
   "/categories",
   [

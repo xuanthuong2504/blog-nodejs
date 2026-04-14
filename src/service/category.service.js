@@ -12,7 +12,7 @@ const getAll = async (query) => {
   }
 };
 
-const getCategoryById = async (id) => {
+const getCategoryById = async (id, userId) => {
   try {
     const cacheKey = `category:${id}`;
     // Try to get category from Redis hash cache first
@@ -26,7 +26,7 @@ const getCategoryById = async (id) => {
     }
     // Cache miss
 
-    const category = await categoryRepo.getById(id);
+    const category = await categoryRepo.getById(id, userId);
     if (!category) {
       return [];
     }
