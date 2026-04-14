@@ -2,15 +2,22 @@ const userRepo = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const redis = require("../config/redis.config");
+const {
+  ERROR_EMAIL,
+  ERROR_PASS,
+  ERROR_EMAIL_EXISTS,
+  ERROR_USER,
+  ERROR_REFTOKEN,
+} = require("../constants/msg.constants");
 const login = async (email, password) => {
   try {
     const user = await userRepo.getbyEmail(email);
     if (!user) {
-      throw new Error("Invalid email or password");
+      throw new Error(ERROR_EMAIL);
     }
     const isMatch = await bcrypt.compare(password, user.UserPassword);
     if (!isMatch) {
-      throw new Error("Invalid email or password");
+      throw new Error(ERROR_PASS);
     }
     const accesstoken = jwt.sign(
       { userId: user.UserId, userRole: user.UserRole },
@@ -38,11 +45,11 @@ const refreshtoken = async (refreshtoken) => {
 
     const stored = await redis.get(cachekey);
     if (!stored || stored !== refreshtoken) {
-      throw new Error("Invalid refresh token");
+      throw new Error(ERROR_REFTOKEN);
     }
     const user = await userRepo.getbyId(decoded.userId);
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error(ERROR_USER);
     const accesstoken = jwt.sign(
       { userId: user.UserId, userRole: user.UserRole },
       process.env.JWT_SECRET,
@@ -57,7 +64,7 @@ const register = async (name, email, password) => {
   try {
     const user = await userRepo.getbyEmail(email);
     if (user) {
-      throw new Error("Email already exists");
+      throw new Error(ERROR_EMAIL_EXISTS);
     }
 
     const hashPassword = await bcrypt.hash(password, 10);

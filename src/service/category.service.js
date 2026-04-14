@@ -3,9 +3,12 @@ const fs = require("fs");
 const path = require("path");
 const redis = require("../config/redis.config");
 const client = require("../config/mqtt.config");
-const getAll = async (query) => {
+const getAll = async (query, userId) => {
   try {
-    const { categories, total, totalpage } = await categoryRepo.getAll(query);
+    const { categories, total, totalpage } = await categoryRepo.getAll(
+      query,
+      userId,
+    );
     return { categories, total, totalpage };
   } catch (error) {
     throw error;
@@ -47,16 +50,21 @@ const getCategoryById = async (id, userId) => {
   }
 };
 
-const create = async (name, description, images) => {
+const create = async (name, description, images, userId) => {
   try {
-    const category = await categoryRepo.create(name, description, images);
+    const category = await categoryRepo.create(
+      name,
+      description,
+      images,
+      userId,
+    );
     // throw Error("Test rollback");
     return {};
   } catch (error) {
     throw error;
   }
 };
-const edit = async (id, name, State) => {
+const edit = async (id, name, State, userId) => {
   try {
     const cacheKey = `category:${id}`;
     const exists = await redis.exists(cacheKey);
@@ -67,7 +75,7 @@ const edit = async (id, name, State) => {
         .expire(cacheKey, 180)
         .exec();
     }
-    await categoryRepo.edit(id, name, State);
+    await categoryRepo.edit(id, name, State, userId);
 
     client.publish("category/updated", JSON.stringify({ id, name, State }), {
       qos: 1,
@@ -79,19 +87,19 @@ const edit = async (id, name, State) => {
     throw error;
   }
 };
-const remove = async (id) => {
+const remove = async (id, userId) => {
   try {
     const cacheKey = `category:${id}`;
     await redis.del(cacheKey);
-    await categoryRepo.remove(id);
+    await categoryRepo.remove(id, userId);
     return {};
   } catch (error) {
     throw error;
   }
 };
-const removeimage = async (id) => {
+const removeimage = async (id, userId) => {
   try {
-    const result = await categoryRepo.getById(id);
+    const result = await categoryRepo.getById(id, userId);
 
     const category = result?.recordset?.[0];
     if (!category) {
@@ -104,7 +112,7 @@ const removeimage = async (id) => {
       if (!name) continue;
       await fs.promises.unlink(path.join(uploadDir, name)).catch(() => {});
     }
-    await categoryRepo.removeimage(id);
+    await categoryRepo.removeimage(id, userId);
     return {};
   } catch (error) {
     throw error;

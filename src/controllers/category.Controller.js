@@ -14,16 +14,26 @@ class CategoryController extends Response {
     const userId = req.user?.userId;
     // console.log("User ID in controller:", userId);
     const category = await categoryService.getCategoryById(id, userId);
-    this.GET(res, category, SUCCESS_CATE, null, null);
+    this.send(res, 200, category, SUCCESS_CATE, null, null);
   });
   getAll = controllerWrapper(async (req, res) => {
+    const userId = req.user?.userId;
     const { categories, total, totalpage } = await categoryService.getAll(
       req.query,
+      userId,
     );
-    this.GET(res, { categories, total, totalpage }, SUCCESS_CATE, null, null);
+    this.send(
+      res,
+      200,
+      { categories, total, totalpage },
+      SUCCESS_CATE,
+      null,
+      null,
+    );
   });
   create = controllerWrapper(async (req, res) => {
     const { name, description } = req.body;
+    const userId = req.user?.userId;
     const images = (req.files || []).map((file) => {
       return file.filename;
     });
@@ -33,9 +43,10 @@ class CategoryController extends Response {
         name,
         description,
         images,
+        userId,
       );
 
-      this.POST(res, newCategory, SUCCESS_CATE, null, null);
+      this.send(res, 201, newCategory, SUCCESS_CATE, null, null);
     } catch (error) {
       const uploadDir = path.join(__dirname, "../public/img/categories");
 
@@ -52,19 +63,22 @@ class CategoryController extends Response {
   edit = controllerWrapper(async (req, res) => {
     const { id } = req.params;
     const { name, State } = req.body;
+    const userId = req.user?.userId;
 
-    const updatedCategory = await categoryService.edit(id, name, State);
-    this.PUT(res, updatedCategory, SUCCESS_CATE, null, null);
+    const updatedCategory = await categoryService.edit(id, name, State, userId);
+    this.send(res, 200, updatedCategory, SUCCESS_CATE, null, null);
   });
   remove = controllerWrapper(async (req, res) => {
     const { id } = req.params;
-    const deletedCategory = await categoryService.remove(id);
-    this.DELETE(res, deletedCategory, SUCCESS_CATE, null, null);
+    const userId = req.user?.userId;
+    const deletedCategory = await categoryService.remove(id, userId);
+    this.send(res, 200, deletedCategory, SUCCESS_CATE, null, null);
   });
   removeimage = controllerWrapper(async (req, res) => {
     const { id } = req.params;
-    const result = await categoryService.removeimage(id);
-    this.DELETE(res, result, SUCCESS_CATE, null, null);
+    const userId = req.user?.userId;
+    const result = await categoryService.removeimage(id, userId);
+    this.send(res, 200, result, SUCCESS_CATE, null, null);
   });
 }
 
