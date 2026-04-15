@@ -40,24 +40,16 @@ const getById = async (id, userId) => {
   return result;
 };
 const create = async (name, description, images, userId) => {
-  const transaction = new sql.Transaction(pool);
-  try {
-    await transaction.begin();
-    const request = new sql.Request(transaction);
-    await request
-      .input("name", sql.NVarChar, name)
-      .input("description", sql.NVarChar, description)
-      .input("images", sql.NVarChar, JSON.stringify(images))
-      .input("userId", sql.Int, userId)
-      .query(
-        "INSERT INTO Categories (name,description,images,UserId) VALUES (@name, @description, @images, @userId)",
-      );
-    await transaction.commit();
-    return [];
-  } catch (error) {
-    await transaction.rollback();
-    throw error;
-  }
+  const result = await pool
+    .request()
+    .input("name", sql.NVarChar, name)
+    .input("description", sql.NVarChar, description)
+    .input("images", sql.NVarChar, JSON.stringify(images))
+    .input("userId", sql.Int, userId)
+    .query(
+      "INSERT INTO Categories (name,description,images,UserId) VALUES (@name, @description, @images, @userId)",
+    );
+  return result;
 };
 const edit = async (id, name, State, userId) => {
   await pool

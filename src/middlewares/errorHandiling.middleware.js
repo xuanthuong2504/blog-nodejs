@@ -1,4 +1,4 @@
-const errorHandlingMiddleware = (err, res) => {
+const errorHandlingMiddleware = (err, req, res, next) => {
   const statusCode = err.statusCode;
   const message = err.message || "Internal Server Error";
 
