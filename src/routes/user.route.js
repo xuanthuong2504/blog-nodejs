@@ -3,13 +3,26 @@ const router = express.Router();
 const { body } = require("express-validator");
 const validationMiddleware = require("../middlewares/validation.middleware");
 const usercontroller = require("../controllers/user.controller");
-const { authenticateToken } = require("../middlewares/auth.middleware");
-router.get("/users/:id", authenticateToken, usercontroller.getuserbyId);
+const authenticateToken = require("../middlewares/auth.middleware");
+const {
+  ERROR_ID,
+  ERROR_EMAIL,
+  ERROR_PASS,
+  ERROR_PASS_LENGTH,
+  ERROR_NAME,
+  ERROR_NAME_LENGHT,
+} = require("../constants/msg.constants");
+router.get(
+  "/users/:id",
+  [body("id").isInt().withMessage(ERROR_ID)],
+  authenticateToken,
+  usercontroller.getuserbyId,
+);
 router.post(
   "/users/login",
   [
-    body("email").notEmpty().withMessage("Email is required"),
-    body("password").notEmpty().withMessage("Password is required"),
+    body("email").notEmpty().withMessage(ERROR_EMAIL),
+    body("password").notEmpty().withMessage(ERROR_PASS),
   ],
   validationMiddleware,
   usercontroller.login,
@@ -19,15 +32,15 @@ router.post(
   [
     body("name")
       .notEmpty()
-      .withMessage("Name is required")
+      .withMessage(ERROR_NAME)
       .isLength({ min: 3, max: 15 })
-      .withMessage("Name must be at least 3 characters"),
-    body("email").notEmpty().withMessage("Email is required"),
+      .withMessage(ERROR_NAME_LENGHT),
+    body("email").notEmpty().withMessage(ERROR_EMAIL),
     body("password")
       .notEmpty()
-      .withMessage("Password is required")
+      .withMessage(ERROR_PASS)
       .isLength({ min: 6 })
-      .withMessage("Password must be at least 6 characters"),
+      .withMessage(ERROR_PASS_LENGTH),
   ],
   validationMiddleware,
   usercontroller.register,

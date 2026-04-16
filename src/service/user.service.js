@@ -3,8 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const redis = require("../config/redis.config");
 const {
-  ERROR_EMAIL,
-  ERROR_PASS,
+  ERROR_EMAIL_FALSE,
+  ERROR_PASS_FALSE,
   ERROR_EMAIL_EXISTS,
   ERROR_USER,
   ERROR_REFTOKEN,
@@ -36,11 +36,11 @@ const login = async (email, password) => {
   try {
     const user = await usermodel.getbyEmail(email);
     if (!user) {
-      throw new Error(ERROR_EMAIL);
+      throw new Error(ERROR_EMAIL_FALSE);
     }
     const isMatch = await bcrypt.compare(password, user.UserPassword);
     if (!isMatch) {
-      throw new Error(ERROR_PASS);
+      throw new Error(ERROR_PASS_FALSE);
     }
     const accesstoken = jwt.sign(
       { userId: user.UserId, userRole: user.UserRole },
@@ -87,7 +87,10 @@ const register = async (name, email, password) => {
   try {
     const user = await usermodel.getbyEmail(email);
     if (user) {
-      throw new Error(ERROR_EMAIL_EXISTS);
+      //throw new Error(ERROR_EMAIL_EXISTS);
+      const err = new Error(ERROR_EMAIL_EXISTS);
+      err.statusCode = 422;
+      throw err;
     }
 
     const hashPassword = await bcrypt.hash(password, 10);

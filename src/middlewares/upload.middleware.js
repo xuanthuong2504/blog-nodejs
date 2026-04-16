@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const crypto = require("crypto");
 const fs = require("fs");
+const { ERROD_IMAGE } = require("../constants/msg.constants");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadDir = path.join(__dirname, "../public/img/categories");
@@ -26,7 +27,7 @@ const fileFilter = (req, file, cb) => {
   if (mimetype && ext) {
     return cb(null, true);
   }
-  cb(new Error("Chỉ chấp nhận file ảnh: " + filetypes));
+  cb(new Error(ERROR_IMAGE));
 };
 const upload = multer({
   storage,

@@ -3,13 +3,23 @@ const router = express.Router();
 const { query, param, body } = require("express-validator");
 const validationMiddleware = require("../middlewares/validation.middleware");
 const category = require("../controllers/category.controller");
-const { authenticateToken } = require("../middlewares/auth.middleware");
+const authenticateToken = require("../middlewares/auth.middleware");
 const upload = require("../middlewares/upload.middleware");
 const resizeimage = require("../middlewares/resize.middleware");
+const {
+  ERROR_ID,
+  ERROR_OFFSET,
+  ERROR_LIMIT,
+  ERROR_NAME,
+  ERROR_NAME_LENGHT,
+  ERROR_DESCRIPTION,
+  ERROR_DESCRIPTION_LENGHT,
+  ERROR_IMAGE_FALSE,
+} = require("../constants/msg.constants");
 
 router.get(
   "/categories/:id",
-  [param("id").isInt().withMessage("Id must be an integer")],
+  [param("id").isInt().withMessage(ERROR_ID)],
   validationMiddleware,
   authenticateToken,
   category.getCategoryById,
@@ -17,8 +27,8 @@ router.get(
 router.get(
   "/categories",
   [
-    query("offset").optional().isInt().withMessage("Offset must be an integer"),
-    query("limit").optional().isInt().withMessage("Limit must be an integer"),
+    query("offset").optional().isInt().withMessage(ERROR_OFFSET),
+    query("limit").optional().isInt().withMessage(ERROR_LIMIT),
   ],
   validationMiddleware,
   authenticateToken,
@@ -30,7 +40,7 @@ router.post(
     upload(req, res, (err) => {
       if (err) {
         return res.status(400).json({
-          message: err.message || "Upload image failed",
+          message: err.message || ERROR_IMAGE_FALSE,
         });
       }
       next();
@@ -40,15 +50,15 @@ router.post(
   [
     body("name")
       .notEmpty()
-      .withMessage("Name is required")
+      .withMessage(ERROR_NAME)
       .isLength({ min: 3, max: 15 })
-      .withMessage("Name must be at least 3 characters"),
+      .withMessage(ERROR_NAME_LENGHT),
 
     body("description")
       .notEmpty()
-      .withMessage("Description is required")
+      .withMessage(ERROR_DESCRIPTION)
       .isLength({ max: 30 })
-      .withMessage("Description too long"),
+      .withMessage(ERROR_DESCRIPTION_LENGHT),
   ],
   validationMiddleware,
   authenticateToken,
@@ -56,21 +66,21 @@ router.post(
 );
 router.put(
   "/categories/:id",
-  [param("id").isInt().withMessage("Id must be an integer")],
+  [param("id").isInt().withMessage(ERROR_ID)],
   validationMiddleware,
   authenticateToken,
   category.edit,
 );
 router.delete(
   "/categories/:id",
-  [param("id").isInt().withMessage("Id must be an integer")],
+  [param("id").isInt().withMessage(ERROR_ID)],
   validationMiddleware,
   authenticateToken,
   category.remove,
 );
 router.patch(
   "/categories/:id",
-  [param("id").isInt().withMessage("Id must be an integer")],
+  [param("id").isInt().withMessage(ERROR_ID)],
   validationMiddleware,
   authenticateToken,
   category.removeimage,
