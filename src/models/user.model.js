@@ -1,6 +1,7 @@
-const { sql, pool } = require("../config/db");
+const { sql, getPool } = require("../config/db.config");
 
 const getbyId = async (id) => {
+  const pool = await getPool();
   const result = await pool
     .request()
     .input("id", sql.Int, id)
@@ -11,6 +12,7 @@ const getbyId = async (id) => {
 };
 
 const getbyEmail = async (email) => {
+  const pool = await getPool();
   const result = await pool
     .request()
     .input("email", sql.VarChar, email)
@@ -20,6 +22,7 @@ const getbyEmail = async (email) => {
   return result.recordset[0] || null;
 };
 const create = async (name, email, hashPassword) => {
+  const pool = await getPool();
   const result = await pool
     .request()
     .input("UserFullname", sql.NVarChar, name)
@@ -31,6 +34,7 @@ const create = async (name, email, hashPassword) => {
   return result;
 };
 const saverefreshtoken = async (id, refreshtoken) => {
+  const pool = await getPool();
   const result = await pool
     .request()
     .input("id", sql.Int, id)

@@ -20,12 +20,19 @@
       "description": "Quản lý danh mục sản phẩm"
     }
   ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+
   "paths": {
     "/categories": {
       "get": {
         "tags": ["Categories"],
         "summary": "Lấy danh sách các danh mục sản phẩm",
         "operationId": "getCategories",
+
         "parameters": [
           {
             "in": "query",
@@ -177,6 +184,13 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "category": {
         "type": "object",

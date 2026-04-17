@@ -1,7 +1,8 @@
-const { sql, pool } = require("../config/db");
+const { sql, getPool } = require("../config/db.config");
 
 const getAll = async (query, userId) => {
   const { offset, limit } = query;
+  const pool = await getPool();
 
   const total = await pool
     .request()
@@ -29,6 +30,7 @@ const getAll = async (query, userId) => {
 };
 
 const getById = async (id, userId) => {
+  const pool = await getPool();
   const result = await pool
     .request()
     .input("id", sql.Int, id)
@@ -40,6 +42,7 @@ const getById = async (id, userId) => {
   return result;
 };
 const create = async (name, description, images, userId) => {
+  const pool = await getPool();
   const result = await pool
     .request()
     .input("name", sql.NVarChar, name)
@@ -52,6 +55,7 @@ const create = async (name, description, images, userId) => {
   return result;
 };
 const edit = async (id, name, State, userId) => {
+  const pool = await getPool();
   await pool
     .request()
     .input("id", sql.Int, id)
@@ -65,6 +69,7 @@ const edit = async (id, name, State, userId) => {
   return [];
 };
 const remove = async (id, userId) => {
+  const pool = await getPool();
   await pool
     .request()
     .input("id", sql.Int, id)
@@ -73,6 +78,7 @@ const remove = async (id, userId) => {
   return [];
 };
 const removeimage = async (id, userId) => {
+  const pool = await getPool();
   await pool
     .request()
     .input("id", sql.Int, id)
