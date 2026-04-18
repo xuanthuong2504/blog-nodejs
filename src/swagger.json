@@ -55,14 +55,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Thành công",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/category"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Success"
           },
           "500": {
             "$ref": "#/components/responses/Internal"
@@ -85,7 +78,8 @@
         },
         "responses": {
           "201": {
-            "description": "Tạo danh mục sản phẩm thành công"
+            "description": "Danh mục sản phẩm được tạo thành công",
+            "$ref": "#/components/responses/Success"
           },
 
           "500": {
@@ -113,18 +107,14 @@
 
         "responses": {
           "200": {
-            "description": "Thành công",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/category"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Success"
           },
 
-          "404": {
-            "description": "Category not found"
+          "400": {
+            "description": "Sai định dạng ID"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal"
           }
         }
       },
@@ -144,7 +134,7 @@
         },
         "responses": {
           "200": {
-            "description": "Cập nhật thành công"
+            "$ref": "#/components/responses/Success"
           },
           "500": {
             "$ref": "#/components/responses/Internal"
@@ -159,7 +149,7 @@
 
         "responses": {
           "200": {
-            "description": "Xóa thành công"
+            "$ref": "#/components/responses/Success"
           },
 
           "500": {
@@ -173,7 +163,7 @@
         "operationId": "deleteCategoryById",
         "responses": {
           "200": {
-            "description": "Xóa thành công"
+            "$ref": "#/components/responses/Success"
           },
 
           "500": {
@@ -246,6 +236,22 @@
     "responses": {
       "Internal": {
         "description": "Internal Server Error"
+      },
+      "Success": {
+        "description": "Thành công",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "object" },
+                "msg": { "type": "string" },
+                "options": { "type": "string" },
+                "error": { "type": "string" }
+              }
+            }
+          }
+        }
       }
     }
   }
