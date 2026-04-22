@@ -1,5 +1,6 @@
 const admin = require("../config/firebase.config");
 const { getMessaging } = require("firebase-admin/messaging");
+const { batchInsert } = require("../models/notify.model");
 const {
   ERROR_DEVICE,
   SUCCESS_MSG,
@@ -14,7 +15,7 @@ const sendNotification = async (req, res) => {
     //gửi thông báo đến thiết bị
     /*  const message = {
       notification: {
-        title: title ,
+        title: title ,  
         body: body ,
       },
 
@@ -24,6 +25,17 @@ const sendNotification = async (req, res) => {
     */
     await getMessaging().subscribeToTopic(token, topic);
     const message = [];
+
+    for (let i = 0; i < 500; i++) {
+      message.push({
+        notification: {
+          title: title,
+          body: body,
+        },
+        token,
+      });
+    }
+    /*
     message.push({
       notification: {
         title: title,
@@ -37,10 +49,16 @@ const sendNotification = async (req, res) => {
         body: "Bạn có một thông báo mới từ hệ thống",
       },
       topic: "client1",
-    });
-    const response = await getMessaging().sendEach(message);
+    });*/
+    await getMessaging().sendEach(message);
+    await batchInsert(
+      message.map((m) => ({
+        title: m.notification.title,
+        body: m.notification.body,
+      })),
+    );
 
-    return res.status(200).json({ message: SUCCESS_MSG, response });
+    return res.status(200).json({ message: SUCCESS_MSG });
   } catch (error) {
     return res.status(500).json({ message: ERROR_MSG, error: error.message });
   }
