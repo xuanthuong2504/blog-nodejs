@@ -21,6 +21,14 @@ const getbyEmail = async (email) => {
     );
   return result.recordset[0] || null;
 };
+const getpassbyId = async (id) => {
+  const pool = await getPool();
+  const result = await pool
+    .request()
+    .input("id", sql.Int, id)
+    .query("SELECT UserPassword FROM Users WHERE UserId = @id");
+  return result.recordset[0] || null;
+};
 const create = async (name, email, hashPassword) => {
   const pool = await getPool();
   const result = await pool
@@ -42,9 +50,20 @@ const saverefreshtoken = async (id, refreshtoken) => {
     .query("UPDATE Users SET RefreshToken = @refreshtoken WHERE UserId = @id");
   return result;
 };
+const updatepass = async (id, hashpassword) => {
+  const pool = await getPool();
+  const result = await pool
+    .request()
+    .input("id", sql.Int, id)
+    .input("UserPassword", sql.VarChar, hashpassword)
+    .query("UPDATE Users SET UserPassword = @UserPassword WHERE UserId = @id");
+  return result;
+};
 module.exports = {
   getbyId,
   getbyEmail,
   create,
+  updatepass,
   saverefreshtoken,
+  getpassbyId,
 };

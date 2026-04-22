@@ -36,11 +36,15 @@ const login = async (email, password) => {
   try {
     const user = await usermodel.getbyEmail(email);
     if (!user) {
-      throw new Error(ERROR_EMAIL_FALSE);
+      const err = new Error(ERROR_EMAIL_FALSE);
+      err.statusCode = 404;
+      throw err;
     }
     const isMatch = await bcrypt.compare(password, user.UserPassword);
     if (!isMatch) {
-      throw new Error(ERROR_PASS_FALSE);
+      const err = new Error(ERROR_PASS_FALSE);
+      err.statusCode = 400;
+      throw err;
     }
     const accesstoken = jwt.sign(
       { userId: user.UserId, userRole: user.UserRole },
@@ -68,11 +72,17 @@ const refreshtoken = async (refreshtoken) => {
 
     const stored = await redis.get(cachekey);
     if (!stored || stored !== refreshtoken) {
-      throw new Error(ERROR_REFTOKEN);
+      const err = new Error(ERROR_REFTOKEN);
+      err.statusCode = 400;
+      throw err;
     }
     const user = await usermodel.getbyId(decoded.userId);
 
-    if (!user) throw new Error(ERROR_USER);
+    if (!user) {
+      const err = new Error(ERROR_USER);
+      err.statusCode = 404;
+      throw err;
+    }
     const accesstoken = jwt.sign(
       { userId: user.UserId, userRole: user.UserRole },
       process.env.JWT_SECRET,
@@ -95,7 +105,7 @@ const register = async (name, email, password) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await usermodel.create(name, email, hashPassword);
+    await usermodel.create(name, email, hashPassword);
     return {};
   } catch (error) {
     throw error;
@@ -110,10 +120,34 @@ const logout = async (id) => {
     throw error;
   }
 };
+const changepass = async (id, oldpass, newpass) => {
+  try {
+    console.log(id);
+    const user = await usermodel.getpassbyId(id);
+    if (!user) {
+      const err = new Error(ERROR_USER);
+      err.statusCode = 404;
+      throw err;
+    }
+    // console.log(user.UserPassword);
+    const isMatch = await bcrypt.compare(oldpass, user.UserPassword);
+    if (!isMatch) {
+      const err = new Error(ERROR_PASS_FALSE);
+      err.statusCode = 400;
+      throw err;
+    }
+    const hashpassword = await bcrypt.hash(newpass, 10);
+    await usermodel.updatepass(id, hashpassword);
+    return {};
+  } catch (error) {
+    throw error;
+  }
+};
 module.exports = {
   login,
   register,
   logout,
   refreshtoken,
   getuserbyId,
+  changepass,
 };

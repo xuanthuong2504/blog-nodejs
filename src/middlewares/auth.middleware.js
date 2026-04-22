@@ -5,26 +5,22 @@ const {
   ERROR_TOKEN_VERIFY,
 } = require("../constants/msg.constants");
 const authenticateToken = (req, res, next) => {
-  try {
-    const token = req.headers["authorization"]?.split(" ")[1];
+  const token = req.headers["authorization"]?.split(" ")[1];
 
-    if (!token) {
-      const err = new Error(ERROR_TOKEN);
-      err.statusCode = 401;
-      throw err;
-    }
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) {
-        const err = new Error(ERROR_TOKEN_VERIFY);
-        err.statusCode = 403;
-        throw err;
-      }
-      req.user = user;
-      // console.log("User in middleware:", req.user);
-      next();
-    });
+  if (!token) {
+    const err = new Error(ERROR_TOKEN);
+    err.statusCode = 401;
+    throw err;
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    return next();
   } catch (error) {
-    next(error);
+    const err = new Error(ERROR_TOKEN_VERIFY);
+    err.statusCode = 403;
+    console.log(err.message);
+    return next(err);
   }
 };
 

@@ -5,6 +5,7 @@ module.exports = {
   SUCCESS_LOGOUT: "Đăng xuất thành công",
   SUCCESS_REFRESH_TOKEN: "Làm mới token thành công",
   SUCCESS_USER: " Lấy thông tin người dùng thành công",
+  SUCCESS_CHANGE_PASS: "Đổi mật khẩu thành công",
   ERROR_500: "Lỗi máy chủ",
   ERROR_ID: "id phải là số nguyên",
   ERROR_OFFSET: "offset phải là số nguyên",
@@ -15,7 +16,7 @@ module.exports = {
   ERROR_USER: "Không tìm thấy người dùng",
   ERROR_REFTOKEN: "Không tìm thấy refresh token",
   ERROR_TOKEN: "Không thấy token",
-  ERROR_TOKEN_Verify: "Token không hợp lệ hoặc đã hết hạn",
+  ERROR_TOKEN_VERIFY: "Token không hợp lệ hoặc đã hết hạn",
   ERROR_EMAIL: "Email bắt buộc nhập",
   ERROR_PASS: "Mật khẩu bắt buộc nhập",
   ERROR_PASS_LENGTH: "Mật khẩu phải có độ dài ít nhất 6 ký tự",
@@ -25,4 +26,8 @@ module.exports = {
   ERROR_DESCRIPTION_LENGHT: "Mô tả phải có độ dài tối đa 30 ký tự",
   ERROR_IMAGE: "Chỉ chấp nhận file ảnh: jpg, jpeg, png, webp",
   ERROR_IMAGE_FALSE: "Lỗi khi tải ảnh lên",
+  //Token device
+  ERROR_DEVICE: "Thiếu device token",
+  SUCCESS_MSG: "Thông báo đã được gửi thành công",
+  ERROR_MSG: "Lỗi khi gửi thông báo",
 };

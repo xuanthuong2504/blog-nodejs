@@ -7,6 +7,7 @@ const {
   SUCCESS_LOGOUT,
   SUCCESS_REFRESH_TOKEN,
   SUCCESS_USER,
+  SUCCESS_CHANGE_PASS,
 } = require("../constants/msg.constants");
 class UserController extends Response {
   constructor() {
@@ -15,7 +16,7 @@ class UserController extends Response {
   getuserbyId = controllerWrapper(async (req, res) => {
     const { id } = req.params;
     const user = await userservice.getuserbyId(id);
-    this.GET(res, user, SUCCESS_USER, null, null);
+    this.send(res, 200, user, SUCCESS_USER, null, null);
   });
   login = controllerWrapper(async (req, res) => {
     const { email, password } = req.body;
@@ -29,7 +30,7 @@ class UserController extends Response {
     this.send(res, 201, result, SUCCESS_REGISTER, null, null);
   });
   logout = controllerWrapper(async (req, res) => {
-    const { id } = req.body;
+    const id = req.user?.userId;
     await userservice.logout(id);
     this.send(res, 200, null, SUCCESS_LOGOUT, null, null);
   });
@@ -37,6 +38,13 @@ class UserController extends Response {
     const { refreshtoken } = req.headers;
     const token = await userservice.refreshtoken(refreshtoken);
     this.send(res, 200, token, SUCCESS_REFRESH_TOKEN, null, null);
+  });
+  changepass = controllerWrapper(async (req, res) => {
+    const id = req.user?.userId;
+
+    const { oldpass, newpass } = req.body;
+    const result = await userservice.changepass(id, oldpass, newpass);
+    this.send(res, 200, result, SUCCESS_CHANGE_PASS, null, null);
   });
 }
 module.exports = new UserController();

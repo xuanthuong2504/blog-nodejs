@@ -57,6 +57,7 @@ async function initConnection() {
 }
 async function getPool() {
   if (poolPromise) {
+    console.log(" Sử dụng kết nối SQL Server đã tồn tại");
     return poolPromise;
   }
 

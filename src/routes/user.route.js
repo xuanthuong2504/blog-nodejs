@@ -48,5 +48,22 @@ router.post(
 
 router.post("/users/logout", authenticateToken, usercontroller.logout);
 router.post("/users/refreshtoken", usercontroller.refreshtoken);
-
+router.patch(
+  "/users/changepass",
+  [
+    body("oldpass")
+      .notEmpty()
+      .withMessage(ERROR_PASS)
+      .isLength({ min: 6 })
+      .withMessage(ERROR_PASS_LENGTH),
+    body("newpass")
+      .notEmpty()
+      .withMessage(ERROR_PASS)
+      .isLength({ min: 6 })
+      .withMessage(ERROR_PASS_LENGTH),
+  ],
+  validationMiddleware,
+  authenticateToken,
+  usercontroller.changepass,
+);
 module.exports = router;

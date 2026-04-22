@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <title>FCM Test</title>
+  </head>
+  <body>
+    <button onclick="getToken()">Lấy FCM Token</button>
+    <p id="token"></p>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
+
+    <script>
+      firebase.initializeApp({
+        apiKey: "AIzaSyDGIqmUI0Sl72CadhkJabfnfQ3crLeUEHY",
+        authDomain: "blognodejs-2a033.firebaseapp.com",
+        projectId: "blognodejs-2a033",
+        storageBucket: "blognodejs-2a033.firebasestorage.app",
+        messagingSenderId: "1096903485848",
+        appId: "1:1096903485848:web:7639331c6bbf61b7cc23ed",
+        measurementId: "G-CBD4F3241Y",
+      });
+
+      const messaging = firebase.messaging();
+
+      async function getToken() {
+        try {
+          // Xin quyền thông báo
+          const permission = await Notification.requestPermission();
+          if (permission !== "granted") {
+            alert("Bạn cần cho phép thông báo!");
+            return;
+          }
+
+          // Lấy token
+          const token = await messaging.getToken({
+            vapidKey:
+              "BF45G4DOdPyToG07n9RqZfDnthE_qzK3sJKdgF7Wa2d5xcy9DVeW8kFmVOIhco0qE2ap8veOpTvdZpWXMSdaxGo", // Lấy từ Firebase Console
+          });
+
+          console.log("Token:", token);
+          document.getElementById("token").innerText = token;
+
+          // Gửi token lên server
+          await fetch("http://localhost:3000/api/save-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+        } catch (err) {
+          console.error("Lỗi:", err);
+        }
+      }
+    </script>
+  </body>
+</html>
