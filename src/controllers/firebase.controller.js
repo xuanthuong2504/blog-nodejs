@@ -1,14 +1,15 @@
-const admin = require("../config/firebase.config");
-const { getMessaging } = require("firebase-admin/messaging");
-const { batchInsert } = require("../models/notify.model");
-const {
-  ERROR_DEVICE,
-  SUCCESS_MSG,
-  ERROR_MSG,
-} = require("../constants/msg.constants");
-const sendNotification = async (req, res) => {
-  try {
+const { ERROR_DEVICE, SUCCESS_MSG } = require("../constants/msg.constants");
+const { controllerWrapper } = require("../utils/controller.utils");
+const { sendNotification } = require("../service/firebase.service");
+const Response = require("../utils/response.utils");
+class FirebaseController extends Response {
+  constructor() {
+    super();
+  }
+
+  sendNotification = controllerWrapper(async (req, res) => {
     const { token, title, body, topic } = req.body;
+
     if (!token) {
       return res.status(400).json({ message: ERROR_DEVICE });
     }
@@ -23,18 +24,8 @@ const sendNotification = async (req, res) => {
     };
       const response = await getMessaging().send(message);
     */
-    await getMessaging().subscribeToTopic(token, topic);
-    const message = [];
+    // await getMessaging().subscribeToTopic(token, topic);
 
-    for (let i = 0; i < 500; i++) {
-      message.push({
-        notification: {
-          title: title,
-          body: body,
-        },
-        token,
-      });
-    }
     /*
     message.push({
       notification: {
@@ -50,21 +41,9 @@ const sendNotification = async (req, res) => {
       },
       topic: "client1",
     });*/
-    await getMessaging().sendEach(message);
-    await batchInsert(
-      message.map((m) => ({
-        title: m.notification.title,
-        body: m.notification.body,
-      })),
-      // notification đang là array{object}
-    );
 
-    return res.status(200).json({ message: SUCCESS_MSG });
-  } catch (error) {
-    return res.status(500).json({ message: ERROR_MSG, error: error.message });
-  }
-};
-
-module.exports = {
-  sendNotification,
-};
+    await sendNotification(token, title, body, topic);
+    this.send(res, 200, null, SUCCESS_MSG, null, null);
+  });
+}
+module.exports = new FirebaseController();
