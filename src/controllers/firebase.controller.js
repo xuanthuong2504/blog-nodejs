@@ -56,6 +56,7 @@ const sendNotification = async (req, res) => {
         title: m.notification.title,
         body: m.notification.body,
       })),
+      // notification đang là array{object}
     );
 
     return res.status(200).json({ message: SUCCESS_MSG });
